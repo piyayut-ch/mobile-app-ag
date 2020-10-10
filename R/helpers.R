@@ -26,12 +26,12 @@ get_play_store <- function(url) {
     details[seq(2, length(details), 2)], 
     details[seq(1, length(details), 2)])
   
-  
   res$img <- html_obj %>%
     html_nodes("img") %>%
     `[[`(1) %>% 
     html_attr("src")
-  res$img <- glue::glue("<img src = {res$img}>") # make it html tag
+  # convert it to html tag
+  res$img <- glue::glue("<img src = {res$img}>")
   
   res$name <- html_obj %>%
     html_nodes(".AHFaub") %>%
@@ -40,7 +40,7 @@ get_play_store <- function(url) {
   res$org <- details[["Offered By"]]
   res$date_update <- details[["Updated"]] %>% 
     str_replace(",", "") %>%
-    lubridate::as_date(format = "%B %d %Y")
+    as.Date(format = "%B %d %Y")
   res$n_downloads <- details[["Installs"]]
 
   res$desc <- html_obj %>%
@@ -68,17 +68,19 @@ DT_app <- function(df, ...) {
   datatable(
     df, 
     escape = FALSE,
+    extensions = 'Buttons',
     options = list(
       language = list(url = url_dt_thai),
+      dom = 'Bfrtip',
+      buttons = c('copy', 'csv', 'excel', 'pdf', 'print'),
       pageLength = 5,
       columnDefs = list(
         list(
           targets = 6,
-          render = JS("function(data, type, row, meta) {", "return type === 'display' && data.length > 300?", "'<span title=\"' + data + '\">' + data.substr(0, 300) + '...</span>' : data;", "}")
+          render = JS("function(data, type, row, meta) {", "return type === 'display' && data.length > 150?", "'<span title=\"' + data + '\">' + data.substr(0, 150) + '...</span>' : data;", "}")
         )
       )
     ),
-    callback = JS('table.page(3).draw(false);'),
     ...
   )
 }

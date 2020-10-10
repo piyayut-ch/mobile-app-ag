@@ -9,9 +9,15 @@ source("../R/helpers.R")
 ```
 
 ```{r, echo = FALSE}
-df <- read_excel("../data/app-2-rvest.xlsx")
+df <- read_excel("../data/app-2-rvest.xlsx") %>%
+  mutate(date_update = as.Date(date_update))
+
 tbl_colnames <- c(
-  "", "ชื่อ", "องค์กร", "วันที่ update", 
+  "", "ชื่อแอป", "องค์กร", "วันที่อัพเดท", 
    "จำนวนดาวน์โหลด", "คำอธิบาย")
-DT_app(df, colnames = tbl_colnames)
+DT_app(
+  df, 
+  colnames = tbl_colnames,
+  height = 1000
+)
 ```
